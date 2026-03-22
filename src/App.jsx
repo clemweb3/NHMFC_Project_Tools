@@ -103,6 +103,29 @@ function taskColor(tf) {
   return              { bar:"#3b82f6", hd:"#1e3a8a", bg:"#1e3a8a", badge:"#3b82f6", label:"NON-CRIT"  };
 }
 
+// ─── Buffered predecessors input (commits on blur / Enter) ────────
+function PredInput({ value, onCommit, style }) {
+  const [draft, setDraft] = useState(value);
+  useEffect(() => { setDraft(value); }, [value]);
+  function commit() { onCommit(draft); }
+  function handleChange(e) {
+    let val = e.target.value.toUpperCase();
+    // Auto-insert comma when a letter follows a letter (e.g. "AB" → "A,B")
+    val = val.replace(/([A-Z0-9])([A-Z])/g, "$1,$2");
+    setDraft(val);
+  }
+  return (
+    <input
+      style={style}
+      value={draft}
+      placeholder="none"
+      onChange={handleChange}
+      onBlur={commit}
+      onKeyDown={e => { if (e.key === "Enter") { commit(); e.target.blur(); } }}
+    />
+  );
+}
+
 // ═══════════════════════════════════════════════════════════════════
 //  SHARED EDITOR TABLE
 // ═══════════════════════════════════════════════════════════════════
@@ -186,7 +209,7 @@ function TaskEditor({ tasks, setTasks, cpm, mode }) {
               <tr key={t.id} style={{background:"#060d1a"}}>
                 <td style={{...S.td, fontWeight:800, color:c.badge}}>{t.id}</td>
                 <td style={S.td}><input style={S.inp} value={t.name} onChange={e=>updateTask(t.id,"name",e.target.value)}/></td>
-                <td style={S.td}><input style={{...S.inp,width:80}} value={t.predecessors.join(",")} placeholder="none" onChange={e=>updateTask(t.id,"predecessors",e.target.value)}/></td>
+                <td style={S.td}><PredInput style={{...S.inp,width:80}} value={t.predecessors.join(",")} onCommit={val=>updateTask(t.id,"predecessors",val)}/></td>
                 <td style={{...S.td,...S.ro,whiteSpace:"nowrap"}}>{fmtShort(sd)}</td>
                 <td style={S.td}>
                   <input type="date" style={S.dateI}
