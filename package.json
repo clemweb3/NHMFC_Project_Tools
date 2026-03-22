@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://clembweb3.github.io/NHMFC_Project_Tools",
+  "homepage": "https://clemweb3.github.io/NHMFC_Project_Tools",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
